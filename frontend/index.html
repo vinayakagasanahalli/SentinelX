@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentinelX — Autonomous SIEM & AI Threat Triage Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="cyber-background"></div>
+    
+    <div class="app-container">
+        <!-- Header -->
+        <header class="navbar">
+            <div class="brand">
+                <div class="shield-logo">🛡️</div>
+                <div>
+                    <h1>SENTINEL<span>X</span></h1>
+                    <p class="subtitle">Autonomous SIEM & AI Threat Triage Engine</p>
+                </div>
+            </div>
+            
+            <div class="status-badge pulse-container">
+                <span class="pulse-dot"></span>
+                <span>SYSTEM STATUS: <strong id="system-status">ONLINE</strong></span>
+            </div>
+        </header>
+
+        <!-- Top Metrics Cards Bar -->
+        <section class="metrics-grid">
+            <div class="metric-card cyan">
+                <div class="metric-header">
+                    <span class="metric-title">TOTAL LOGS INGESTED</span>
+                    <span class="metric-icon">📥</span>
+                </div>
+                <div class="metric-value" id="stat-logs">0</div>
+                <div class="metric-footer">Real-time syslog pipeline</div>
+            </div>
+
+            <div class="metric-card amber">
+                <div class="metric-header">
+                    <span class="metric-title">DETECTED INCIDENTS</span>
+                    <span class="metric-icon">⚠️</span>
+                </div>
+                <div class="metric-value" id="stat-incidents">0</div>
+                <div class="metric-footer">Security anomalies flagged</div>
+            </div>
+
+            <div class="metric-card red">
+                <div class="metric-header">
+                    <span class="metric-title">HIGH-RISK THREATS</span>
+                    <span class="metric-icon">🔥</span>
+                </div>
+                <div class="metric-value" id="stat-threats">0</div>
+                <div class="metric-footer">Critical & High CVSS rating</div>
+            </div>
+
+            <div class="metric-card emerald">
+                <div class="metric-header">
+                    <span class="metric-title">FIREWALL BLOCKED IPs</span>
+                    <span class="metric-icon">🚫</span>
+                </div>
+                <div class="metric-value" id="stat-blocked">0</div>
+                <div class="metric-footer">Active playbook mitigations</div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Split Layout -->
+        <div class="dashboard-grid">
+            <!-- Left Column: Attack Simulator & Incident Feed -->
+            <main class="feed-section">
+                <!-- Attack Simulator Banner -->
+                <div class="card simulator-card">
+                    <div class="card-header">
+                        <h2>⚡ Real-Time Attack Simulator</h2>
+                        <span class="tag">Interactive Testing</span>
+                    </div>
+                    <p class="card-desc">Simulate live cyber threats to test SentinelX Rule Detection, AI Threat Triage, and Automated Remediation in real-time.</p>
+                    
+                    <div class="simulator-buttons">
+                        <button class="sim-btn red" onclick="simulateAttack('sqli')">💥 SQL Injection</button>
+                        <button class="sim-btn orange" onclick="simulateAttack('brute_force')">🔓 Brute Force</button>
+                        <button class="sim-btn yellow" onclick="simulateAttack('xss')">📜 XSS Payload</button>
+                        <button class="sim-btn cyan" onclick="simulateAttack('path_traversal')">📂 Path Traversal</button>
+                        <button class="sim-btn purple" onclick="simulateAttack('ransomware')">☣️ Ransomware Activity</button>
+                    </div>
+                </div>
+
+                <!-- Incidents Feed List -->
+                <div class="card feed-card">
+                    <div class="card-header">
+                        <h2>🚨 Live Security Incident Feed</h2>
+                        <button class="refresh-btn" onclick="fetchData()">🔄 Sync Feed</button>
+                    </div>
+
+                    <div id="incidents-container" class="incidents-list">
+                        <div class="loading-state">Initializing SIEM engine feed...</div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Column: Blocked IPs & System Rules -->
+            <aside class="sidebar-section">
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <h2>🚫 Active Firewall Blocks</h2>
+                        <span class="badge red-badge" id="blocked-badge-count">0</span>
+                    </div>
+                    <p class="card-desc">IP addresses blacklisted automatically by SentinelX Incident Response Playbooks.</p>
+                    
+                    <ul id="blocked-ips-list" class="blocked-list">
+                        <li class="empty-list">No active IP blocks recorded.</li>
+                    </ul>
+                </div>
+
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <h2>🧠 AI Triage Capabilities</h2>
+                    </div>
+                    <ul class="capabilities-list">
+                        <li><span class="icon">🔍</span> <strong>MITRE ATT&CK Mapping:</strong> Auto-indexes technique IDs.</li>
+                        <li><span class="icon">🤖</span> <strong>Groq AI Engine:</strong> Rapid log trace analysis.</li>
+                        <li><span class="icon">⚡</span> <strong>Automated Response:</strong> Instant firewall IP blacklisting.</li>
+                        <li><span class="icon">📊</span> <strong>CVSS Scoring:</strong> Real-time risk metric evaluation.</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Incident Detail & AI Triage Modal -->
+    <div id="incident-modal" class="modal">
+        <div class="modal-content card">
+            <div class="modal-header">
+                <span id="modal-severity-tag" class="severity-tag">CRITICAL</span>
+                <h2 id="modal-title">Incident Title</h2>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-meta-grid">
+                    <div><strong>Category:</strong> <span id="modal-category">-</span></div>
+                    <div><strong>Source IP:</strong> <span id="modal-ip" class="mono">-</span></div>
+                    <div><strong>CVSS Risk Score:</strong> <span id="modal-risk" class="risk-score">9.5</span></div>
+                    <div><strong>Status:</strong> <span id="modal-status">-</span></div>
+                </div>
+
+                <div class="section-box ai-box">
+                    <h3>🧠 AI Threat Triage Analysis</h3>
+                    <div id="modal-ai-summary" class="ai-text">Analyzing incident traces...</div>
+                </div>
+
+                <div class="section-box log-box">
+                    <h3>📄 Raw Log Evidence</h3>
+                    <pre id="modal-raw-logs" class="raw-code"></pre>
+                </div>
+
+                <div class="section-box action-box">
+                    <h3>🛡️ Recommended Mitigation & Action Plan</h3>
+                    <div id="modal-recommendation">Executing mitigation strategy...</div>
+                    <div id="modal-action-taken" class="action-taken-text"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="modal-remediate-btn" class="action-btn red" onclick="executeManualRemediation()">⚡ Run Automated Playbook (Block IP)</button>
+                <button class="action-btn secondary" onclick="closeModal()">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
